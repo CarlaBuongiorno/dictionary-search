@@ -1,26 +1,16 @@
+import pytest
+
 from dictionary_search import find_key
 
 
-def test_empty_string_in_empty_dict():
-    match = find_key({}, '')
-    assert match == False
-
-
-def test_string_in_dict():
-    match = find_key({'key': 'value'}, 'key')
-    assert match == True
-
-
-def test_string_not_in_dict():
-    match = find_key({'key2': 'value'}, 'key')
-    assert match == False
-
-
-def test_string_in_nested_dict():
-    match = find_key({'key2': {'key': 'value'}}, 'key')
-    assert match == True
-
-
-def test_string_not_in_nested_dict():
-    match = find_key({'key2': {'key3': 'value'}}, 'key')
-    assert match == False
+@pytest.mark.parametrize('source_dictionary, target_string, expected', [
+    ({},                            'key', False),
+    ({'key2': 'value'},             'key', False),
+    ({'key': 'value'},              'key', True),
+    ({'key2': {'key3': 'value'}},   'key', False),
+    ({'key2': {'key': 'value'}},    'key', True),
+    ({'key2': {'key4': 'value'}, 'key3': {'key5': {'key6': 'value'}}}, 'key', False),
+    ({'key2': {'key4': 'value'}, 'key3': {'key5': {'key6': {'key8': 'value'}, 'key7': {'key': 'value'}}}}), 'key', True,
+])
+def test_find_key(source_dictionary, target_string, expected):
+    assert find_key(source_dictionary, target_string) == expected
